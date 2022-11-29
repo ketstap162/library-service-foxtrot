@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "debug_toolbar",
     "books",
-    "users"
+    "users",
     "borrowing",
 ]
 
