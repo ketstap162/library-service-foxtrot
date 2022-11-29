@@ -19,7 +19,7 @@ In this project, you will be fixing all these problems. And to do so, you’ll i
 * ~30MB/year
 
 ## Architecture:
-![image](https://user-images.githubusercontent.com/72568844/204557974-f3fa5c93-d962-4c97-94e3-cf01934680b5.png)
+![image](https://user-images.githubusercontent.com/72568844/204559703-690630e2-4bc4-4173-bbca-e26c197b3cdc.png)
 
 ### Resources:
 1) Book:
