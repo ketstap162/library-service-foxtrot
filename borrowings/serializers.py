@@ -2,7 +2,9 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from borrowings.models import Borrowing, calculate_expected_return_date
+from books.serializers import BookSerializer
+from borrowings.models import Borrowing
+from users.serializers import UserSerializer
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -16,21 +18,33 @@ class BorrowingSerializer(serializers.ModelSerializer):
             "user",
             "book",
         )
-        read_only_fields = (
-            "id",
-            "borrow_date",
-            "user",
-            "book",
-        )
 
 
-class BorrowingCreateSerializer(BorrowingSerializer):
+class BorrowingListSerializer(BorrowingSerializer):
+    title = serializers.CharField(source="book.title", read_only=True)
+    borrower = serializers.CharField(source="user.email", read_only=True)
 
     class Meta:
         model = Borrowing
         fields = (
-            "book",
+            "id",
+            "borrow_date",
+            "expected_return_date",
+            "actual_return_date",
+            "title",
+            "borrower",
         )
+
+
+class BorrowingRetrieveSerializer(BorrowingSerializer):
+    book = BookSerializer(many=False, read_only=True)
+    user = UserSerializer(many=False, read_only=True)
+
+
+class BorrowingCreateSerializer(BorrowingSerializer):
+    class Meta:
+        model = Borrowing
+        fields = ("book",)
 
     def create(self, validated_data):
         book = validated_data["book"]
