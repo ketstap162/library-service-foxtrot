@@ -13,6 +13,7 @@ def calculate_expected_return_date(borrow_days: int) -> datetime:
 
 class Borrowing(models.Model):
     BORROW_TERM = 14
+
     borrow_date = models.DateField(auto_now_add=True)
     expected_return_date = models.DateField(
         default=calculate_expected_return_date(borrow_days=BORROW_TERM)
