@@ -1,5 +1,6 @@
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from borrowings.models import Borrowing
 from borrowings.serializers import (
@@ -57,3 +58,20 @@ class BorrowingViewSet(
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "is_staff",
+                type={"type": "list", "items": {"type": "numbers"}},
+                description="Filter by users(ex. ?user_id=1)"
+            ),
+            OpenApiParameter(
+                "borrowed",
+                type={"type": "list", "items": {"type": "numbers"}},
+                description="Filter by status of book is borrowed(ex. ?is_active=True)"
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
