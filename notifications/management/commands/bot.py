@@ -1,7 +1,20 @@
+from django.utils import timezone
+
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+from django.core.management import BaseCommand
+
 from notifications.keybords.stuff_kb import kb_stuff
+
+
+class Command(BaseCommand):
+    help = 'Displays current time'
+
+    def handle(self, *args, **kwargs):
+        time = timezone.now().strftime('%X')
+        self.stdout.write("It's now %s" % time)
+
 
 bot = Bot(token="5940358054:AAEFRx8od9PwXF1aSRet74wy4eh1Lre0wMM")
 db = Dispatcher(bot)
@@ -24,7 +37,7 @@ async def commands_start(message: types.Message):
 
 @db.message_handler(commands=["users"])
 async def commands_users(message: types.Message):
-    await bot.send_message(message.from_user.id, "all_users")
+    await bot.send_message(message.from_user.id, "all_123345rs")
 
 
 @db.message_handler(commands=["books"])
