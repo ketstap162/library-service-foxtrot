@@ -32,7 +32,7 @@ class BorrowingMessages:
             f"{borrowing.borrow_date}\n"
             f"Book: {borrowing.book.title}\n"
             f"User: {borrowing.user.email}\n"
-            f"Actual return: {borrowing.actual_return_date}\n"
+            f"Returned: {borrowing.actual_return_date}\n"
         )
 
 
