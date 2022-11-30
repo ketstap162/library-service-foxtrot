@@ -1,6 +1,14 @@
-from rest_framework import mixins, viewsets
+import datetime
+
+from rest_framework import mixins, viewsets, status
+from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+
+from rest_framework.response import Response
+
 
 from borrowings.models import Borrowing
 from borrowings.serializers import (
@@ -75,3 +83,20 @@ class BorrowingViewSet(
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="return",
+    )
+    def return_book(self, request, pk=None):
+        borrowing = get_object_or_404(Borrowing, pk=pk)
+        borrowing.book.inventory += 1
+        borrowing.actual_return_date = datetime.date.today()
+        borrowing.save()
+
+        return Response(
+            BorrowingSerializer(borrowing).data,
+            status=status.HTTP_200_OK
+        )
+
