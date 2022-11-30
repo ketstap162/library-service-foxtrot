@@ -3,6 +3,9 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
+from django.db.models import CheckConstraint, Q
+from django.db.models.functions import Now
+
 from books.models import Book
 
 
@@ -49,6 +52,22 @@ class Borrowing(models.Model):
             price *= self.EXPIRED_DATA_PRICE_FACTOR
 
         return price
+        
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                check=Q(borrow_date__lte=Now()),
+                name="Borrow date must be less than or equal today"
+            ),
+            CheckConstraint(
+                check=Q(expected_return_date__gt=Now()),
+                name="Expected return date must be greater than or equal today"
+            ),
+            CheckConstraint(
+                check=Q(actual_return_date__gte=Now()),
+                name="Actual return date must be greater than or equal today"
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"Book {self.book.title} was borrowed at: {self.borrow_date}. Return date: {self.expected_return_date}"
