@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "books",
     "users",
     "borrowings",
+    "notifications",
 ]
 
 MIDDLEWARE = [
@@ -166,4 +167,3 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = "users.User"
 
-TOKEN_TELEGRAM = "5940358054:AAEFRx8od9PwXF1aSRet74wy4eh1Lre0wMM"
