@@ -1,10 +1,12 @@
+import os
+
 import requests
 
 
 TELEGRAM_API = "https://api.telegram.org/"
-BOT_TOKEN = "5852038857:AAEHsZaLQOLm3bptGebQoLc9AFGe_Sa-67Q"
+BOT_TOKEN = os.getenv("BUT_TOKEN")
 BOT_SLUG = f"bot{BOT_TOKEN}/"
-CHAT_ID = "-1001824191547"
+CHAT_ID = os.getenv("CHAT_ID")
 
 
 class TelegramBot:
