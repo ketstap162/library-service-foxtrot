@@ -59,3 +59,7 @@ class BorrowingCreateSerializer(BorrowingSerializer):
             book.save()
 
         return borrowing
+
+
+class ReadBorrowSerializer(BorrowingSerializer):
+    book = BookSerializer()
