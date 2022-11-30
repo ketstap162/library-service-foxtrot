@@ -8,7 +8,7 @@ class BorrowingMessages:
     def create(borrowing: Borrowing) -> str:
         return (
             "**New borrowing!**\n"
-            f"{borrowing.borrow_date}"
+            f"{borrowing.borrow_date}\n"
             f"Book: {borrowing.book.title}\n"
             f"User: {borrowing.user.email}\n"
             f"Expect return: {borrowing.expected_return_date}\n"
@@ -18,7 +18,7 @@ class BorrowingMessages:
     def outdated(borrowing: Borrowing) -> str:
         return (
             "**The book has not been returned yet!**\n"
-            f"{borrowing.borrow_date}"
+            f"{borrowing.borrow_date}\n"
             f"Book: {borrowing.book.title}\n"
             f"User: {borrowing.user.email}\n"
             f"Expect return: {borrowing.expected_return_date}\n"
@@ -29,7 +29,7 @@ class BorrowingMessages:
     def book_return(borrowing: Borrowing) -> str:
         return (
             "**Returned the book!**\n"
-            f"{borrowing.borrow_date}"
+            f"{borrowing.borrow_date}\n"
             f"Book: {borrowing.book.title}\n"
             f"User: {borrowing.user.email}\n"
             f"Actual return: {borrowing.actual_return_date}\n"
