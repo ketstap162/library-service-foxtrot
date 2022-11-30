@@ -2,6 +2,7 @@ import datetime
 
 from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
@@ -91,6 +92,11 @@ class BorrowingViewSet(
     )
     def return_book(self, request, pk=None):
         borrowing = get_object_or_404(Borrowing, pk=pk)
+        if borrowing.is_returned:
+            raise ValidationError(
+                f"Book '{borrowing.book}' has already been returned."
+            )
+
         borrowing.book.inventory += 1
         borrowing.actual_return_date = datetime.date.today()
         borrowing.save()
@@ -99,4 +105,3 @@ class BorrowingViewSet(
             BorrowingSerializer(borrowing).data,
             status=status.HTTP_200_OK
         )
-
