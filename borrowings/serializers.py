@@ -6,6 +6,7 @@ from books.serializers import BookSerializer
 from borrowings.models import Borrowing
 from notifications.message_templates import BorrowingMessages
 from notifications.telegram_bot import TelegramBot
+from payment.models import Payment
 from users.serializers import UserSerializer
 
 
@@ -57,6 +58,13 @@ class BorrowingCreateSerializer(BorrowingSerializer):
 
         with transaction.atomic():
             borrowing = Borrowing.objects.create(book=book, user=user)
+
+            Payment.objects.create(
+                payment_status="PENDING",
+                money_to_pay=borrowing.book.daily_fee,
+                borrowing=borrowing,
+                user=borrowing.user_id,
+            )
 
             book.inventory -= 1
             book.save()
