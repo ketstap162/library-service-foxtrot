@@ -83,13 +83,14 @@ class BorrowingViewSet(
             OpenApiParameter(
                 "borrowed",
                 type={"type": "list", "items": {"type": "numbers"}},
-                description="Filter by status of book is borrowed(ex. ?is_active=True)",
+                description="Filter by status of book (borrowed or not)(ex. ?is_active=True)"
             ),
         ]
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    @extend_schema(description="Endpoint for returning of book", methods=["POST"])
     @action(
         methods=["POST"],
         detail=True,
