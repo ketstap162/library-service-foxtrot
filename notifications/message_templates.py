@@ -7,32 +7,35 @@ class BorrowingMessages:
     @staticmethod
     def create(borrowing: Borrowing) -> str:
         return (
-            "**New borrowing!**\n"
-            f"{borrowing.borrow_date}\n"
+            "** New borrowing! **\n\n"
+            f"Date: {borrowing.borrow_date}\n"
             f"Book: {borrowing.book.title}\n"
             f"User: {borrowing.user.email}\n"
-            f"Expect return: {borrowing.expected_return_date}\n"
+            f"Expect return: {borrowing.expected_return_date}\n\n"
+            f"#borrowed"
         )
 
     @staticmethod
     def outdated(borrowing: Borrowing) -> str:
         return (
-            "**The book has not been returned yet!**\n"
-            f"{borrowing.borrow_date}\n"
+            "** The book has not been returned yet! **\n\n"
+            f"Borrowed: {borrowing.borrow_date}\n"
             f"Book: {borrowing.book.title}\n"
             f"User: {borrowing.user.email}\n"
             f"Expect return: {borrowing.expected_return_date}\n"
-            f"Now: {datetime.date.today()}"
+            f"Now: {datetime.date.today()}\n\n"
+            f"#outdated"
         )
 
     @staticmethod
     def book_return(borrowing: Borrowing) -> str:
         return (
-            "**Returned the book!**\n"
-            f"{borrowing.borrow_date}\n"
+            "** Returned the book! **\n\n"
+            f"Borrowed: {borrowing.borrow_date}\n"
             f"Book: {borrowing.book.title}\n"
             f"User: {borrowing.user.email}\n"
-            f"Returned: {borrowing.actual_return_date}\n"
+            f"Returned: {borrowing.actual_return_date}\n\n"
+            f"#returned"
         )
 
 
