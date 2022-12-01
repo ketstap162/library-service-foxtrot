@@ -29,21 +29,28 @@ class Migration(migrations.Migration):
                 (
                     "payment_status",
                     models.CharField(
-                        choices=[("PE", "PENDING"), ("PA", "PAID")], max_length=7
+                        choices=[("PE", "PENDING"), ("PA", "PAID")],
+                        max_length=7,
                     ),
                 ),
                 (
                     "type_status",
                     models.CharField(
-                        choices=[("PA", "PAYMENT"), ("FI", "FINE")], max_length=7
+                        choices=[("PA", "PAYMENT"), ("FI", "FINE")],
+                        max_length=7,
                     ),
                 ),
                 ("session_url", models.URLField()),
                 (
                     "session_id",
-                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, unique=True
+                    ),
                 ),
-                ("money_to_pay", models.DecimalField(decimal_places=2, max_digits=5)),
+                (
+                    "money_to_pay",
+                    models.DecimalField(decimal_places=2, max_digits=5),
+                ),
                 (
                     "borrowing",
                     models.OneToOneField(

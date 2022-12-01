@@ -33,7 +33,10 @@ class Migration(migrations.Migration):
                     "expected_return_date",
                     models.DateField(default=datetime.date(2022, 12, 14)),
                 ),
-                ("actual_return_date", models.DateField(blank=True, null=True)),
+                (
+                    "actual_return_date",
+                    models.DateField(blank=True, null=True),
+                ),
                 (
                     "book",
                     models.ForeignKey(

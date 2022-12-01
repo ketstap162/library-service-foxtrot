@@ -23,15 +23,22 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("title", models.CharField(max_length=255)),
-                ("author", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "author",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
                 (
                     "cover",
                     models.CharField(
-                        choices=[("HARD", "HARD"), ("SOFT", "SOFT")], max_length=4
+                        choices=[("HARD", "HARD"), ("SOFT", "SOFT")],
+                        max_length=4,
                     ),
                 ),
                 ("inventory", models.PositiveIntegerField()),
-                ("daily_fee", models.DecimalField(decimal_places=2, max_digits=4)),
+                (
+                    "daily_fee",
+                    models.DecimalField(decimal_places=2, max_digits=4),
+                ),
             ],
             options={
                 "ordering": ["title"],
