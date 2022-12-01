@@ -3,7 +3,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from payment.models import Payment
-from payment.serializers import PaymentSerializer
+from payment.serializers import PaymentSerializer, PaymentRetrieveSerializer
 
 
 class PaymentViewSet(
@@ -21,3 +21,9 @@ class PaymentViewSet(
             return queryset
 
         return queryset.filter(borrowing__user=self.request.user.id)
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return PaymentRetrieveSerializer
+
+        return PaymentSerializer

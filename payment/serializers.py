@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from borrowings.serializers import BorrowingRetrieveSerializer
 from payment.models import Payment
 
 
@@ -17,3 +18,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             "money_to_pay",
         )
         read_only_fields = ("id", "money",)
+
+
+class PaymentRetrieveSerializer(PaymentSerializer):
+    borrowing = BorrowingRetrieveSerializer()
