@@ -73,12 +73,12 @@ class BorrowingViewSet(
             OpenApiParameter(
                 "is_staff",
                 type={"type": "list", "items": {"type": "numbers"}},
-                description="Filter by users(ex. ?user_id=1)"
+                description="Filter by users(ex. ?user_id=1)",
             ),
             OpenApiParameter(
                 "borrowed",
                 type={"type": "list", "items": {"type": "numbers"}},
-                description="Filter by status of book is borrowed(ex. ?is_active=True)"
+                description="Filter by status of book is borrowed(ex. ?is_active=True)",
             ),
         ]
     )
@@ -102,6 +102,5 @@ class BorrowingViewSet(
         borrowing.save()
 
         return Response(
-            BorrowingSerializer(borrowing).data,
-            status=status.HTTP_200_OK
+            BorrowingSerializer(borrowing).data, status=status.HTTP_200_OK
         )

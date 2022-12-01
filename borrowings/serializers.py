@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 
 from books.serializers import BookSerializer
 from borrowings.models import Borrowing
+from payment.models import Payment
 from users.serializers import UserSerializer
 
 
@@ -53,7 +54,14 @@ class BorrowingCreateSerializer(BorrowingSerializer):
             raise ValidationError(f"Book '{book.title}' is out of stock")
 
         with transaction.atomic():
-            borrowing = Borrowing.objects.create(book=book)
+            borrowing = Borrowing.objects.create(**validated_data)
+
+            Payment.objects.create(
+                payment_status="PENDING",
+                money_to_pay=borrowing.book.daily_fee,
+                borrowing=borrowing,
+                user=borrowing.user_id,
+            )
 
             book.inventory -= 1
             book.save()
