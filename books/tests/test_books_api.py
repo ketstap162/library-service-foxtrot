@@ -7,6 +7,10 @@ from rest_framework import status
 
 from books.models import Book
 from books.serializers import BookSerializer
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
+from books.permisions import IsAdminOrReadOnly
+from django.contrib.auth import get_user_model
 
 BOOK_URL = reverse("books:book-list")
 
@@ -78,27 +82,51 @@ class AuthenticatedBookApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class AdminBooksApiTest(TestCase):
+class IsAdminOrReadOnlyTest(TestCase):
     def setUp(self):
-        self.client = APIClient()
-        self.user = get_user_model().objects.create_user(
-            "admin@admin.com",
-            "admin12345",
+        self.admin_user = get_user_model().objects.create(
+            email="admin@admin.com",
             is_staff=True,
         )
-        self.client.force_authenticate(self.user)
+        self.non_admin_user = get_user_model().objects.create(email="admin2@admin.com")
+        self.factory = RequestFactory()
 
-    def test_create_book(self):
-        payload = {
-            "title": "Sample book",
-            "author": "Test author",
-            "cover": "HARD",
-            "inventory": 90,
-            "daily_fee": 0.5
-        }
-        res = self.client.post(BOOK_URL, context=payload)
-        book = Book.objects.get(id=res.data["id"])
+    def test_admin_user_returns_true(self):
+        request = self.factory.delete('/')
+        request.user = self.admin_user
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        for key in payload:
-            self.assertEqual(payload[key], getattr(book, key))
+        permission_check = IsAdminOrReadOnly()
+
+        permission = permission_check.has_permission(request, None)
+
+        self.assertTrue(permission)
+
+    def test_admin_user_returns_true_on_safe_method(self):
+        request = self.factory.get('/')
+        request.user = self.admin_user
+
+        permission_check = IsAdminOrReadOnly()
+
+        permission = permission_check.has_permission(request, None)
+
+        self.assertTrue(permission)
+
+    def test_non_admin_user_returns_false(self):
+        request = self.factory.delete('/')
+        request.user = self.non_admin_user
+
+        permission_check = IsAdminOrReadOnly()
+
+        permission = permission_check.has_permission(request, None)
+
+        self.assertFalse(permission)
+
+    def test_non_admin_user_returns_true_on_safe_method(self):
+        request = self.factory.get('/')
+        request.user = self.non_admin_user
+
+        permission_check = IsAdminOrReadOnly()
+
+        permission = permission_check.has_permission(request, None)
+
+        self.assertTrue(permission)
