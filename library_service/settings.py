@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "debug_toolbar",
+    "django_q",
     "books",
     "users",
     "borrowings",
@@ -123,6 +124,15 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+
+# Configure your Q cluster
+# More details https://django-q.readthedocs.io/en/latest/configure.html
+
+Q_CLUSTER = {
+    "name": "library",
+    "orm": "default",  # Use Django's ORM + database for broker
+}
 
 
 # Static files (CSS, JavaScript, Images)
