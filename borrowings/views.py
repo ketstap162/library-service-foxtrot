@@ -28,7 +28,7 @@ class BorrowingViewSet(
 ):
     queryset = Borrowing.objects.select_related("user", "book")
     serializer_class = BorrowingSerializer
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     @staticmethod
     def params_to_ints(qs):
@@ -44,7 +44,7 @@ class BorrowingViewSet(
                 queryset = queryset.filter(user__id__in=users_ids)
 
         else:
-            queryset = Borrowing.objects.filter(user=self.request.user)
+            queryset = Borrowing.objects.filter(user=self.request.user.id)
 
         borrowed = self.request.query_params.get("is_active")
 
@@ -66,19 +66,19 @@ class BorrowingViewSet(
         return BorrowingSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user.id)
 
     @extend_schema(
         parameters=[
             OpenApiParameter(
                 "is_staff",
                 type={"type": "list", "items": {"type": "numbers"}},
-                description="Filter by users(ex. ?user_id=1)"
+                description="Filter by users(ex. ?user_id=1)",
             ),
             OpenApiParameter(
                 "borrowed",
                 type={"type": "list", "items": {"type": "numbers"}},
-                description="Filter by status of book is borrowed(ex. ?is_active=True)"
+                description="Filter by status of book is borrowed(ex. ?is_active=True)",
             ),
         ]
     )
@@ -102,6 +102,5 @@ class BorrowingViewSet(
         borrowing.save()
 
         return Response(
-            BorrowingSerializer(borrowing).data,
-            status=status.HTTP_200_OK
+            BorrowingSerializer(borrowing).data, status=status.HTTP_200_OK
         )
