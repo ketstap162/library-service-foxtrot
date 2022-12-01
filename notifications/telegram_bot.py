@@ -1,12 +1,11 @@
-import os
-
 import requests
 
+from library_service import settings
 
 TELEGRAM_API = "https://api.telegram.org/"
-BOT_TOKEN = os.getenv("BUT_TOKEN")
+BOT_TOKEN = settings.TELEGRAM_BOT_TOKEN
 BOT_SLUG = f"bot{BOT_TOKEN}/"
-CHAT_ID = os.getenv("CHAT_ID")
+CHAT_ID = settings.TELEGRAM_CHAT_ID
 
 
 class TelegramBot:
@@ -25,4 +24,5 @@ class TelegramBot:
 
 
 if __name__ == "__main__":
+    print(TelegramBot.CONTACT)
     TelegramBot.send_message("Test massage")
