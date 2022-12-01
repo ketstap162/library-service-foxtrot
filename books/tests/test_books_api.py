@@ -1,5 +1,3 @@
-from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django.urls import reverse
 
 from rest_framework.test import APIClient
@@ -7,7 +5,6 @@ from rest_framework import status
 
 from books.models import Book
 from books.serializers import BookSerializer
-from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
 from books.permisions import IsAdminOrReadOnly
 from django.contrib.auth import get_user_model
@@ -21,7 +18,7 @@ def sample_book(**params):
         "author": "Test author",
         "cover": "HARD",
         "inventory": 90,
-        "daily_fee": 0.5
+        "daily_fee": 0.5,
     }
     defaults.update(params)
 
@@ -44,10 +41,7 @@ class UnauthenticatedBookApiTest(TestCase):
 class AuthenticatedBookApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = get_user_model().objects.create_user(
-            "test@test.com",
-            "testpass"
-        )
+        self.user = get_user_model().objects.create_user("test@test.com", "testpass")
         self.client.force_authenticate(self.user)
 
     def test_list_books(self):
@@ -76,23 +70,23 @@ class AuthenticatedBookApiTests(TestCase):
             "author": "Test author",
             "cover": "HARD",
             "inventory": 90,
-            "daily_fee": 0.5
+            "daily_fee": 0.5,
         }
         res = self.client.post(BOOK_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class IsAdminOrReadOnlyTest(TestCase):
+class IsAdminOrReadOnlyAccessTests(TestCase):
     def setUp(self):
         self.admin_user = get_user_model().objects.create(
             email="admin@admin.com",
             is_staff=True,
         )
-        self.non_admin_user = get_user_model().objects.create(email="admin2@admin.com")
+        self.non_admin_user = get_user_model().objects.create(email="user@user.com")
         self.factory = RequestFactory()
 
-    def test_admin_user_returns_true(self):
-        request = self.factory.delete('/')
+    def test_admin_user_has_permission(self):
+        request = self.factory.delete("/")
         request.user = self.admin_user
 
         permission_check = IsAdminOrReadOnly()
@@ -101,8 +95,8 @@ class IsAdminOrReadOnlyTest(TestCase):
 
         self.assertTrue(permission)
 
-    def test_admin_user_returns_true_on_safe_method(self):
-        request = self.factory.get('/')
+    def test_admin_user_can_perform_safe_method(self):
+        request = self.factory.get("/")
         request.user = self.admin_user
 
         permission_check = IsAdminOrReadOnly()
@@ -111,8 +105,8 @@ class IsAdminOrReadOnlyTest(TestCase):
 
         self.assertTrue(permission)
 
-    def test_non_admin_user_returns_false(self):
-        request = self.factory.delete('/')
+    def test_non_admin_user_has_not_permission(self):
+        request = self.factory.delete("/")
         request.user = self.non_admin_user
 
         permission_check = IsAdminOrReadOnly()
@@ -120,13 +114,3 @@ class IsAdminOrReadOnlyTest(TestCase):
         permission = permission_check.has_permission(request, None)
 
         self.assertFalse(permission)
-
-    def test_non_admin_user_returns_true_on_safe_method(self):
-        request = self.factory.get('/')
-        request.user = self.non_admin_user
-
-        permission_check = IsAdminOrReadOnly()
-
-        permission = permission_check.has_permission(request, None)
-
-        self.assertTrue(permission)
