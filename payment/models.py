@@ -1,5 +1,7 @@
 import uuid
 
+from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from borrowings.models import Borrowing
@@ -16,8 +18,24 @@ class Payment(models.Model):
     )
 
     payment_status = models.CharField(max_length=7, choices=STATUS_CHOICES)
-    type_status = models.CharField(max_length=7, choices=TYPE_CHOICES)
-    borrowing = models.OneToOneField(to=Borrowing, on_delete=models.CASCADE)
+    type_status = models.CharField(
+        max_length=7, choices=TYPE_CHOICES, default="PAYMENT"
+    )
+    borrowing = models.OneToOneField(
+        to=Borrowing, on_delete=models.CASCADE, related_name="payments"
+    )
     session_url = models.URLField()
-    session_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    money_to_pay = models.DecimalField(max_digits=5, decimal_places=2)
+    session_id = models.UUIDField(
+        default=uuid.uuid4, editable=False, unique=True
+    )
+    money_to_pay = models.DecimalField(
+        max_digits=5, decimal_places=2, validators=[MinValueValidator(0.01)]
+    )
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="payments",
+    )
+
+    def __str__(self):
+        return self.payment_status
