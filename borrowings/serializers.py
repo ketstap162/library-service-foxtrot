@@ -4,6 +4,8 @@ from rest_framework.exceptions import ValidationError
 
 from books.serializers import BookSerializer
 from borrowings.models import Borrowing
+from notifications.message_templates import BorrowingMessages
+from notifications.telegram_bot import TelegramBot
 from payment.models import Payment
 from users.serializers import UserSerializer
 
@@ -49,12 +51,13 @@ class BorrowingCreateSerializer(BorrowingSerializer):
 
     def create(self, validated_data):
         book = validated_data["book"]
+        user = validated_data["user"]
 
         if book.inventory == 0:
             raise ValidationError(f"Book '{book.title}' is out of stock")
 
         with transaction.atomic():
-            borrowing = Borrowing.objects.create(**validated_data)
+            borrowing = Borrowing.objects.create(book=book, user=user)
 
             Payment.objects.create(
                 payment_status="PENDING",
@@ -65,6 +68,10 @@ class BorrowingCreateSerializer(BorrowingSerializer):
 
             book.inventory -= 1
             book.save()
+
+            TelegramBot.send_message(
+                BorrowingMessages.create(borrowing)
+            )
 
         return borrowing
 

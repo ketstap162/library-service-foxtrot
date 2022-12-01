@@ -18,6 +18,8 @@ from borrowings.serializers import (
     BorrowingListSerializer,
     BorrowingRetrieveSerializer,
 )
+from notifications.message_templates import BorrowingMessages
+from notifications.telegram_bot import TelegramBot
 
 
 class BorrowingViewSet(
@@ -63,6 +65,9 @@ class BorrowingViewSet(
         if self.action == "create":
             return BorrowingCreateSerializer
 
+        if self.action == "return_book":
+            return None
+
         return BorrowingSerializer
 
     def perform_create(self, serializer):
@@ -100,6 +105,10 @@ class BorrowingViewSet(
         borrowing.book.inventory += 1
         borrowing.actual_return_date = datetime.date.today()
         borrowing.save()
+
+        TelegramBot.send_message(
+            BorrowingMessages.book_return(borrowing)
+        )
 
         return Response(
             BorrowingSerializer(borrowing).data, status=status.HTTP_200_OK
