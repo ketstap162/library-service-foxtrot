@@ -18,6 +18,8 @@ from borrowings.serializers import (
     BorrowingListSerializer,
     BorrowingRetrieveSerializer,
 )
+from notifications.message_templates import BorrowingMessages
+from notifications.telegram_bot import TelegramBot
 
 
 class BorrowingViewSet(
@@ -28,7 +30,7 @@ class BorrowingViewSet(
 ):
     queryset = Borrowing.objects.select_related("user", "book")
     serializer_class = BorrowingSerializer
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     @staticmethod
     def params_to_ints(qs):
@@ -44,7 +46,7 @@ class BorrowingViewSet(
                 queryset = queryset.filter(user__id__in=users_ids)
 
         else:
-            queryset = Borrowing.objects.filter(user=self.request.user)
+            queryset = Borrowing.objects.filter(user=self.request.user.id)
 
         borrowed = self.request.query_params.get("is_active")
 
@@ -63,28 +65,32 @@ class BorrowingViewSet(
         if self.action == "create":
             return BorrowingCreateSerializer
 
+        if self.action == "return_book":
+            return None
+
         return BorrowingSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user.id)
 
     @extend_schema(
         parameters=[
             OpenApiParameter(
                 "is_staff",
                 type={"type": "list", "items": {"type": "numbers"}},
-                description="Filter by users(ex. ?user_id=1)"
+                description="Filter by users(ex. ?user_id=1)",
             ),
             OpenApiParameter(
                 "borrowed",
                 type={"type": "list", "items": {"type": "numbers"}},
-                description="Filter by status of book is borrowed(ex. ?is_active=True)"
+                description="Filter by status of book (borrowed or not)(ex. ?is_active=True)"
             ),
         ]
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    @extend_schema(description="Endpoint for returning of book", methods=["POST"])
     @action(
         methods=["POST"],
         detail=True,
@@ -101,7 +107,10 @@ class BorrowingViewSet(
         borrowing.actual_return_date = datetime.date.today()
         borrowing.save()
 
+        TelegramBot.send_message(
+            BorrowingMessages.book_return(borrowing)
+        )
+
         return Response(
-            BorrowingSerializer(borrowing).data,
-            status=status.HTTP_200_OK
+            BorrowingSerializer(borrowing).data, status=status.HTTP_200_OK
         )

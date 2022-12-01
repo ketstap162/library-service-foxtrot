@@ -14,13 +14,14 @@ class TelegramBot:
     @classmethod
     def send_message(cls, message):
         function = "sendMessage"
+        url = cls.CONTACT + function
 
         payload = {
             "chat_id": CHAT_ID,
             "text": message
         }
 
-        print(requests.get(cls.CONTACT + function, params=payload))
+        print(requests.get(url, params=payload))
 
 
 if __name__ == "__main__":
